@@ -129,7 +129,7 @@ func StyledRunesFromString(plainTextStyle twin.Style, s string, lineIndex *linem
 
 			case '\x09': // TAB
 				for {
-					cells = append(cells, twin.StyledRune{
+					cells = append(cells, RuneWithMetadata{
 						Rune:  ' ',
 						Style: style,
 					})
@@ -143,12 +143,12 @@ func StyledRunesFromString(plainTextStyle twin.Style, s string, lineIndex *linem
 			case '�': // Go's broken-UTF8 marker
 				switch UnprintableStyle {
 				case UnprintableStyleHighlight:
-					cells = append(cells, twin.StyledRune{
+					cells = append(cells, RuneWithMetadata{
 						Rune:  '?',
 						Style: styleUnprintable,
 					})
 				case UnprintableStyleWhitespace:
-					cells = append(cells, twin.StyledRune{
+					cells = append(cells, RuneWithMetadata{
 						Rune:  '?',
 						Style: twin.StyleDefault,
 					})
@@ -157,7 +157,7 @@ func StyledRunesFromString(plainTextStyle twin.Style, s string, lineIndex *linem
 				}
 
 			case BACKSPACE:
-				cells = append(cells, twin.StyledRune{
+				cells = append(cells, RuneWithMetadata{
 					Rune:  '<',
 					Style: styleUnprintable,
 				})
@@ -166,12 +166,12 @@ func StyledRunesFromString(plainTextStyle twin.Style, s string, lineIndex *linem
 				if !twin.Printable(token.Rune) {
 					switch UnprintableStyle {
 					case UnprintableStyleHighlight:
-						cells = append(cells, twin.StyledRune{
+						cells = append(cells, RuneWithMetadata{
 							Rune:  '?',
 							Style: styleUnprintable,
 						})
 					case UnprintableStyleWhitespace:
-						cells = append(cells, twin.StyledRune{
+						cells = append(cells, RuneWithMetadata{
 							Rune:  ' ',
 							Style: twin.StyleDefault,
 						})
@@ -180,7 +180,10 @@ func StyledRunesFromString(plainTextStyle twin.Style, s string, lineIndex *linem
 					}
 					continue
 				}
-				cells = append(cells, token)
+				cells = append(cells, RuneWithMetadata{
+					Rune:  token.Rune,
+					Style: token.Style,
+				})
 			}
 		}
 	})
