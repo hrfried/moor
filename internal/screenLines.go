@@ -18,7 +18,7 @@ type renderedLine struct {
 	// will have a wrapIndex of 1.
 	wrapIndex int
 
-	cells []twin.StyledRune
+	cells []textstyles.RuneWithMetadata
 
 	// Used for rendering clear-to-end-of-line control sequences:
 	// https://en.wikipedia.org/wiki/ANSI_escape_code#EL
@@ -68,7 +68,7 @@ func (p *Pager) redraw(spinner string) {
 //
 // The lines returned by this method are decorated with horizontal scroll
 // markers and line numbers and are ready to be output to the screen.
-func (p *Pager) renderScreenLines() (lines [][]twin.StyledRune, statusText string) {
+func (p *Pager) renderScreenLines() (lines [][]RuneWithMetadata, statusText string) {
 	renderedLines, statusText := p.renderLines()
 	if len(renderedLines) == 0 {
 		return
