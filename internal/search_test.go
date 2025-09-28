@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"slices"
 	"testing"
 
 	"github.com/walles/moor/v2/internal/reader"
@@ -131,4 +132,34 @@ func Test152(t *testing.T) {
 
 	assert.Equal(t, "Search", modeName(pager))
 	assert.Equal(t, 2, pager.lineIndex().Index())
+}
+
+func TestScrollToNextSearchHit_SubLineHits1(t *testing.T) {
+	reader := reader.NewFromTextForTesting("", "1miss 2träff 3miss 4miss 5träff 6miss 7miss 8träff 9miss")
+
+	screen := twin.NewFakeScreen(10, 3)
+	pager := NewPager(reader)
+	pager.WrapLongLines = true
+	pager.ShowStatusBar = false
+	pager.ShowLineNumbers = false
+	pager.screen = screen
+
+	pager.searchString = "träff"
+	searchMode := PagerModeSearch{pager: pager}
+	pager.mode = searchMode
+
+	// Scroll to the next search hit
+	searchMode.updateSearchPattern()
+
+	// Update the screen
+	pager.redraw("")
+
+	screenRows := []string{
+		rowToString(screen.GetRow(0)),
+		rowToString(screen.GetRow(1)),
+		rowToString(screen.GetRow(2)),
+	}
+
+	// The first hit should be visible
+	assert.Equal(t, true, slices.Contains(screenRows, "2träff"))
 }
